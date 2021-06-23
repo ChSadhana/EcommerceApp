@@ -5,15 +5,37 @@ import { Switch , Route } from 'react-router-dom'
 import Shoppage from './Pages/Shop/Shoppage';
 import Header from './Components/Header/Header';
 import signinsignup from './Pages/signin-signup/signin-signup';
+import { auth } from './Firebase/Firebase.utils'
 
 
+class App extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      currentUser: null
+    };
+  }
+
+  unsubscribeFromAuth = null;
+
+  componentDidMount() {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
+      this.setState({ currentUser: user });
+
+      console.log(user);
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
 
 
-
-function App ()  {
+render() {
   return (
     <div >
-       <Header />
+       <Header currentUser ={this.state.currentUser}/>
       <Switch>
         <Route exact path='/' component={Homepage} />
         <Route path='/shop' component={Shoppage}/>
@@ -21,6 +43,7 @@ function App ()  {
       </Switch>
     </div>
   );
+}
 }
 
 export default App;
